@@ -10,11 +10,13 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineStatsInterface.h"
 #include "Interfaces/OnlineUserInterface.h"
+#include "Interfaces/OnlineFriendsInterface.h"
 #include"OnlineSubsystemUtils/Classes/FindSessionsCallbackProxy.h"
 #include "OSSActor.generated.h"
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnLoginCompleteBP,int32, LocalUserNum, bool ,bWasSuccessful,  FString ,UserId, const FString&, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFindSessionsCompleteBP, bool,bWasSuccessful, const TArray<FBlueprintSessionResult>&, Results);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnJoinSessionCompleteBP,FName,SessionName, FString,Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnReadFriendsListCompleteBP, int32 ,LocalUserNum, bool ,bWasSuccessful, const FString& ,ListName, const FString& ,ErrorStr);
 
 UENUM()
 enum EOSSResult
@@ -45,7 +47,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FName SubsystemName;
 	TSharedPtr<FOnlineSessionSearch> OnlineSessionSearch;
-	
+
 	
 	
 	//Delegates
@@ -60,6 +62,10 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnJoinSessionCompleteBP OnJoinSessionCompleteBP;
 	void OnJoinSessionCompleteDelegates(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	UPROPERTY(BlueprintAssignable)
+	FOnReadFriendsListCompleteBP OnReadFriendsListCompleteBP;
+	void OnReadFriendsListCompleteDelegates(int32 LocalUserNum, bool bWasSuccessful, const FString& ListName, const FString& ErrorStr);
+	FOnReadFriendsListComplete OnReadFriendsListComplete;
 };
 
 

@@ -31,18 +31,18 @@ void AOSSActor::Tick(float DeltaTime)
 AOSSActor* AOSSActor::GetOnlineSubsystemActor(UObject* WorldContextObject,FName InSubsystemName,TEnumAsByte<EOSSResult>& Result)
 {
 	Result=EOSSResult::Fail;
-	
+	if(!IOnlineSubsystem::Get(InSubsystemName))
+	{//if subsystem is not inited 
+		UE_LOG(LogOnline,Error,TEXT(" %s is Null"),*InSubsystemName.ToString());
+		return NULL;
+	}
 	TArray<AActor*> OnlineSubsystemActors;
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	UGameplayStatics::GetAllActorsOfClass(WorldContextObject,AOSSActor::StaticClass(),OnlineSubsystemActors);
 	if(OnlineSubsystemActors.Num()==0)
 	{
 		UE_LOG(LogOnline,Log,TEXT("No OSA Found,Creating OSA for %s"),*InSubsystemName.ToString());
-		if(!IOnlineSubsystem::Get(InSubsystemName))
-		{//if subsystem is not inited 
-			UE_LOG(LogOnline,Error,TEXT(" %s is Null"),*InSubsystemName.ToString());
-			return NULL;
-		}
+		
 		AOSSActor* OnlineSubsystemActor=World->SpawnActor<AOSSActor>(AOSSActor::StaticClass());
 		OnlineSubsystemActor->Init(InSubsystemName);
 		Result=EOSSResult::Success;
@@ -120,6 +120,12 @@ void AOSSActor::OnFindSessionsCompleteDelegates(bool bWasSuccessful)
 void AOSSActor::OnJoinSessionCompleteDelegates(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
 	OnJoinSessionCompleteBP.Broadcast(SessionName,EOnJoinSessionCompleteResultToString(Result));
+}
+
+void AOSSActor::OnReadFriendsListCompleteDelegates(int32 LocalUserNum, bool bWasSuccessful, const FString& ListName,
+	const FString& ErrorStr)
+{
+	OnReadFriendsListCompleteBP.Broadcast(LocalUserNum,bWasSuccessful,ListName,ErrorStr);
 }
 
 

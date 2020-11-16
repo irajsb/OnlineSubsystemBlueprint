@@ -17,6 +17,7 @@ bool USessionInterfaceLibrary::FindSession(AOSSActor* OnlineSubsystemActor, int 
     IOnlineSession* OnlineSession=	IOnlineSubsystem::Get(OnlineSubsystemActor->SubsystemName)->GetSessionInterface().Get();
     OnlineSubsystemActor->OnlineSessionSearch->MaxSearchResults=50;
   OnlineSubsystemActor->  OnlineSessionSearch->TimeoutInSeconds=TimeOut;
+    if(!OnlineSession->OnFindSessionsCompleteDelegates.IsBound())
     OnlineSession->OnFindSessionsCompleteDelegates.AddUObject(OnlineSubsystemActor,&AOSSActor::OnFindSessionsCompleteDelegates);
     return OnlineSession->FindSessions(SearchingUserNum,OnlineSubsystemActor->OnlineSessionSearch.ToSharedRef());
     
@@ -26,6 +27,7 @@ bool USessionInterfaceLibrary::JoinSession(AOSSActor* OnlineSubsystemActor, int 
     FBlueprintSessionResult Session)
 {
     IOnlineSession* OnlineSession=	IOnlineSubsystem::Get(OnlineSubsystemActor->SubsystemName)->GetSessionInterface().Get();
+    if(!OnlineSession->OnJoinSessionCompleteDelegates.IsBound())
     OnlineSession->OnJoinSessionCompleteDelegates.AddUObject(OnlineSubsystemActor,&AOSSActor::OnJoinSessionCompleteDelegates);
     return OnlineSession->JoinSession(LocalUserIndex,NAME_GameSession,Session.OnlineResult);
     
